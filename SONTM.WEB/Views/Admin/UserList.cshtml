@@ -1,0 +1,40 @@
+﻿@using SONTM.WEB.Entities
+@model List<ApplicationUser>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Tài khoản</th>
+            <th scope="col">Vai trò</th>
+            <th scope="col">Tác vụ</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var index = 1;
+        }
+        @foreach (var user in Model)
+        {
+            if (user.UserName.ToLower() != "admin")
+            {
+                <tr>
+                    <th scope="row">@index</th>
+                    <td>@user.UserName</td>
+                    <td>@user.RoleName</td>
+                    <td>
+                        @if (user.IsBlock.HasValue && user.IsBlock.Value)
+                        {
+                            <button type="button" class="btn btn-warning btn-sm"><i class="fas fa-unlock"></i>Mở khóa</button>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-danger btn-sm"><i class="fas fa-lock"></i>Khóa</button>
+                        }
+
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

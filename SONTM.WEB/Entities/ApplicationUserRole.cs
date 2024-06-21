@@ -10,5 +10,9 @@ namespace SONTM.WEB.Entities
         public string Id { get; set; }
         public string UserId { get; set; }
         public string RoleId { get; set; }
+        [NotMapped]
+        public string UserName { get; set; }
+        [NotMapped]
+        public string RoleName { get; set; }
     }
 }

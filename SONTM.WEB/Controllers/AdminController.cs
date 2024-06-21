@@ -8,6 +8,7 @@ using SONTM.WEB.Entities;
 using SONTM.WEB.Models;
 using System.Security.Claims;
 using SONTM.WEB.Helpers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SONTM.WEB.Controllers
 {
@@ -49,7 +50,7 @@ namespace SONTM.WEB.Controllers
                         new Claim(ClaimTypes.NameIdentifier, user.Id),
                         new Claim(ClaimTypes.Name, user.UserName),
                     };
-                    if(allRoles.Any())
+                    if (allRoles.Any())
                     {
                         foreach (var role in allRoles)
                         {
@@ -81,6 +82,84 @@ namespace SONTM.WEB.Controllers
         {
             // Logic để so sánh mật khẩu đã hash với mật khẩu người dùng nhập vào
             return PasswordHelper.IsValidPassword(enteredPassword, storedHashedPassword);
+        }
+
+        [Authorize(Roles = "admin")]
+        [HttpGet]
+        [Route("/users")]
+        public async Task<IActionResult> UserList()
+        {
+            var query = from users in _context.Users
+                        join roles in _context.Roles on users.RoleId equals roles.Id
+                        select new ApplicationUser
+                        {
+                            Id = users.Id,
+                            RoleId = roles.Id,
+                            RoleName = roles.Name,
+                            IsBlock = users.IsBlock,
+                            UserName = users.UserName,
+                            CreatedById = users.CreatedById,
+                            CreatedByName = users.CreatedByName,
+                            CreatedDate = users.CreatedDate,
+                            UpdatedById = users.UpdatedById,
+                            UpdatedByName = users.UpdatedByName,
+                            UpdatedDate = users.UpdatedDate,
+                        };
+            var userList = await query.ToListAsync();
+            return View(userList);
+        }
+        [Authorize(Roles = "admin")]
+        [HttpPost]
+        [Route("/users")]
+        public async Task<IActionResult> CreateUser(ApplicationUser user)
+        {
+            if(ModelState.IsValid)
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var userName = User.Identity!.Name;
+                await _context.Users.AddAsync(new ApplicationUser
+                {
+                    Id = Guid.NewGuid().ToString("N"),
+                    CreatedById = userId,
+                    CreatedByName = userName,
+                    CreatedDate = DateTime.Now,
+                    IsBlock = false,
+                    UserName = user.UserName,
+                    PasswordHash = PasswordHelper.HashPassword(user.Password),
+                }) ;
+            }
+            return RedirectToAction("Admin", "UserList");
+        }
+        [Authorize(Roles = "admin")]
+        [HttpGet]
+        [Route("/roles")]
+        public async Task<IActionResult> RoleList()
+        {
+            var query = _context.Roles;
+            var roleList = await query.ToListAsync();
+            return View(roleList);
+        }
+        [Authorize(Roles = "admin")]
+        [HttpPost]
+        [Route("/roles")]
+        public async Task<IActionResult> CreateRole(ApplicationRole role)
+        {
+            if (ModelState.IsValid)
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var userName = User.Identity!.Name;
+                await _context.Roles.AddAsync(new ApplicationRole
+                {
+                    Id = Guid.NewGuid().ToString("N"),
+                    CreatedById = userId,
+                    CreatedByName = userName,
+                    CreatedDate = DateTime.Now,
+                    Code = role.Code,
+                    Name = role.Name,
+                    Description = role.Description,
+                });
+            }
+            return RedirectToAction("Admin", "RoleList");
         }
     }
 }
