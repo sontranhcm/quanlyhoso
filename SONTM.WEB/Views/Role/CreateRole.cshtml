@@ -1,0 +1,25 @@
+﻿@using SONTM.WEB.Entities;
+@model ApplicationRole
+@{
+    var guid = Guid.NewGuid().ToString("N");
+}
+<form method="post" asp-action="Add" asp-controller="Role">
+    <input type="hidden" name="Id" value="@guid" />
+    <div class="form-group">
+        <label asp-for="Code" class="control-label"></label>
+        <input asp-for="Code" class="form-control" />
+        <span asp-validation-for="Code" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Name" class="control-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Description" class="control-label"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+    </div>
+    <div class="form-group">
+        <input type="submit" class="btn btn-primary" value="Tạo vai trò" />
+    </div>
+</form>

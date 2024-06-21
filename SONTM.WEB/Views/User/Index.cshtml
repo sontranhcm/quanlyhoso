@@ -1,6 +1,6 @@
 ﻿@using SONTM.WEB.Entities
 @model List<ApplicationUser>
-
+<a class="btn btn-primary" href="users/add"><i class="fas fa-plus ml-2"></i>Thêm mới</a>
 <table class="table">
     <thead>
         <tr>
@@ -16,13 +16,15 @@
         }
         @foreach (var user in Model)
         {
-            if (user.UserName.ToLower() != "admin")
-            {
-                <tr>
-                    <th scope="row">@index</th>
-                    <td>@user.UserName</td>
-                    <td>@user.RoleName</td>
-                    <td>
+
+
+            <tr>
+                <th scope="row">@index</th>
+                <td>@user.UserName</td>
+                <td>@string.Join(", ", user.Roles.Select(x => x.Code))</td>
+                <td>
+                    @if (user.UserName.ToLower() != "admin")
+                    {
                         @if (user.IsBlock.HasValue && user.IsBlock.Value)
                         {
                             <button type="button" class="btn btn-warning btn-sm"><i class="fas fa-unlock"></i>Mở khóa</button>
@@ -31,10 +33,13 @@
                         {
                             <button type="button" class="btn btn-danger btn-sm"><i class="fas fa-lock"></i>Khóa</button>
                         }
+                    }
 
-                    </td>
-                </tr>
-            }
+
+                </td>
+            </tr>
+
+            index++;
         }
     </tbody>
 </table>
