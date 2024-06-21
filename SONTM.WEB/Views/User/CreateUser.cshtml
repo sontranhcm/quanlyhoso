@@ -4,27 +4,36 @@
     var guid = Guid.NewGuid().ToString("N");
     var roleList = ViewBag.RoleList;
 }
-<form method="post" asp-action="Add" asp-controller="Role">
+<form method="post" action="add">
     <input type="hidden" name="Id" value="@guid" />
-    <div class="form-group">
+    <div class="form-group mb-2">
         <label asp-for="UserName" class="control-label"></label>
         <input asp-for="UserName" class="form-control" />
         <span asp-validation-for="UserName" class="text-danger"></span>
     </div>
-    <div class="form-group">
+    <div class="form-group mb-2">
         <label asp-for="Password" class="control-label"></label>
         <input asp-for="Password" class="form-control" type="password" />
         <span asp-validation-for="Password" class="text-danger"></span>
     </div>
-    @if (roleList != null && roleList!.Any())
+    <label>Chọn vai trò</label>
+    @if (roleList != null && roleList.Count > 0)
     {
-        <select class="form-control" name="Roles">
-            @foreach(var role in roleList)
-            {
-                <option value="@role.Id">@role.Code</option>
-            }
-        </select>
+        var index = 0;
+        @foreach (var role in roleList)
+        {
+            bool selected = role.IsSelected;
+            <div class="form-check">
+                @Html.CheckBox($"Roles[{index}].IsSelected")
+                <input type="hidden" name="Roles[@index].Id" value="@role.Id"/>
+                <input type="hidden" name="Roles[@index].Code" value="@role.Code" />
+                <input type="hidden" name="Roles[@index].Name" value="@role.Name" />
+                <label class="form-check-label ml-2">@role.Code</label>
+            </div>
+            index++;
+        }
     }
+
     <div class="form-group">
         <input type="submit" class="btn btn-primary" value="Tạo tài khoản" />
     </div>

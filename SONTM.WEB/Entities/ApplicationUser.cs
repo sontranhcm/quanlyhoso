@@ -8,12 +8,14 @@ namespace SONTM.WEB.Entities
     {
         [Key]
         public string Id { get; set; }
+        [Required]
         public string UserName { get; set; }
-        public string PasswordHash { get; set; }
+        public string? PasswordHash { get; set; }
         public bool? IsBlock { get; set; }
         [NotMapped]
         public IEnumerable<ApplicationRole> Roles { get; set; }
         [NotMapped]
+        [Required]
         public string Password { get; set; }
     }
 }

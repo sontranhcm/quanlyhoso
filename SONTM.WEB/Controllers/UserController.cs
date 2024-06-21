@@ -65,11 +65,29 @@ namespace SONTM.WEB.Controllers
                     CreatedByName = userName,
                     CreatedDate = DateTime.Now,
                     IsBlock = false,
-                    UserName = user.UserName,
+                    UserName = user.UserName.Trim().ToLower(),
                     PasswordHash = PasswordHelper.HashPassword(user.Password),
                 });
+                foreach(var role in user.Roles)
+                {
+                    if(role.IsSelected)
+                    {
+                        await _context.UserRoles.AddAsync(new ApplicationUserRole
+                        {
+                            Id = Guid.NewGuid().ToString("N"),
+                            CreatedById=userId,
+                            CreatedByName=userName,
+                            CreatedDate=DateTime.Now,
+                            RoleId = role.Id,
+                            RoleName = role.Name,
+                            UserId = user.Id,
+                            UserName = user.UserName
+                        });
+                    }
+                }
+                await _context.SaveChangesAsync();
             }
-            return RedirectToAction("Admin", "UserList");
+            return RedirectToAction("Index", "User");
         }
     }
 }

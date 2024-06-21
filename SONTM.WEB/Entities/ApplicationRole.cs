@@ -11,5 +11,7 @@ namespace SONTM.WEB.Entities
         public string Name { get; set; }
         public string Code { get; set; }
         public string Description { get; set; }
+        [NotMapped]
+        public bool IsSelected { get; set; }
     }
 }
